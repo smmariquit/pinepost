@@ -3,10 +3,10 @@ import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { Button } from "../src/components/Button";
-import { decodeInvite } from "../src/invite";
-import { upsertTree } from "../src/store";
-import { colors, radii, spacing } from "../src/theme";
+import { Button } from "@/components/Button";
+import { decodeInvite } from "@/invite";
+import { upsertTree } from "@/store";
+import { colors, radii, spacing } from "@/theme";
 
 export default function JoinScreen() {
   const [code, setCode] = useState("");
@@ -19,7 +19,9 @@ export default function JoinScreen() {
       return;
     }
     setError(null);
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (process.env.EXPO_OS === "ios") {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
     upsertTree({ ...tree, isMine: false });
     router.replace(`/tree/${tree.id}`);
   }

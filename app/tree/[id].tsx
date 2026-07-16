@@ -1,14 +1,14 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Share, StyleSheet, Text, View, useWindowDimensions, ScrollView } from "react-native";
-import { Button } from "../../src/components/Button";
-import { Countdown } from "../../src/components/Countdown";
-import { Snow } from "../../src/components/Snow";
-import { TreeCanvas } from "../../src/components/TreeCanvas";
-import { isUnlocked } from "../../src/christmas";
-import { encodeInvite } from "../../src/invite";
-import { useAppState, useCountdownTick, useTree } from "../../src/store";
-import { colors, spacing } from "../../src/theme";
-import type { Ornament } from "../../src/types";
+import { Button } from "@/components/Button";
+import { Countdown } from "@/components/Countdown";
+import { Snow } from "@/components/Snow";
+import { TreeCanvas } from "@/components/TreeCanvas";
+import { isUnlocked } from "@/christmas";
+import { encodeInvite } from "@/invite";
+import { useAppState, useCountdownTick, useTree } from "@/store";
+import { colors, spacing } from "@/theme";
+import type { Ornament } from "@/types";
 
 export default function TreeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -43,7 +43,7 @@ export default function TreeScreen() {
     <View style={styles.root}>
       <Stack.Screen options={{ title: tree.title }} />
       <Snow height={700} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content}>
         <Text style={styles.meta}>
           {tree.ownerName} · {tree.ornaments.length} ornaments
           {tree.featured ? " · Featured" : ""}

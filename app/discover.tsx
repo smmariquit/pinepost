@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { colorById, topperById } from "../src/catalog";
-import { useRankedTrees } from "../src/store";
-import { colors, radii, spacing } from "../src/theme";
-import type { Tree } from "../src/types";
+import { colorById, topperById } from "@/catalog";
+import { useRankedTrees } from "@/store";
+import { colors, radii, spacing } from "@/theme";
+import type { Tree } from "@/types";
 
 export default function DiscoverScreen() {
   const trees = useRankedTrees();
@@ -16,6 +16,7 @@ export default function DiscoverScreen() {
       <FlatList
         data={trees}
         keyExtractor={(t) => t.id}
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.list}
         renderItem={({ item, index }) => (
           <TreeRow tree={item} rank={index + 1} onPress={() => router.push(`/tree/${item.id}`)} />

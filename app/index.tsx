@@ -1,20 +1,18 @@
 import { Link, Redirect, router } from "expo-router";
-import { Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Button } from "../src/components/Button";
-import { Countdown } from "../src/components/Countdown";
-import { Snow } from "../src/components/Snow";
-import { TreeCanvas } from "../src/components/TreeCanvas";
-import { isUnlocked } from "../src/christmas";
-import { encodeInvite } from "../src/invite";
-import { useAppState, useCountdownTick, useMyTree } from "../src/store";
-import { colors, spacing } from "../src/theme";
-import type { Ornament } from "../src/types";
+import { Pressable, ScrollView, Share, Text, View, useWindowDimensions } from "react-native";
+import { Button } from "@/components/Button";
+import { Countdown } from "@/components/Countdown";
+import { Snow } from "@/components/Snow";
+import { TreeCanvas } from "@/components/TreeCanvas";
+import { isUnlocked } from "@/christmas";
+import { encodeInvite } from "@/invite";
+import { useAppState, useCountdownTick, useMyTree } from "@/store";
+import { colors, spacing } from "@/theme";
+import type { Ornament } from "@/types";
 
 export default function HomeScreen() {
   const myTree = useMyTree();
   const state = useAppState();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const now = useCountdownTick();
   const unlocked = isUnlocked(now, state.demoUnlock);
@@ -23,142 +21,111 @@ export default function HomeScreen() {
     return <Redirect href="/create" />;
   }
 
+  const tree = myTree;
   const treeWidth = Math.min(340, width - 32);
 
   async function shareTree() {
-    const code = encodeInvite(myTree!);
+    const code = encodeInvite(tree);
     await Share.share({
-      message: `Decorate my Pinepost tree "${myTree!.title}" and leave a Christmas message.\n\nInvite code:\n${code}\n\nOpen Pinepost → Join a tree → paste the code.`,
+      message: `Decorate my Pinepost tree "${tree.title}" and leave a Christmas message.\n\nInvite code:\n${code}\n\nOpen Pinepost → Join a tree → paste the code.`,
     });
   }
 
   function openOrnament(o: Ornament) {
-    router.push(`/ornament/${myTree!.id}/${o.id}`);
+    router.push(`/ornament/${tree.id}/${o.id}`);
   }
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]} testID="home-screen">
+    <View style={{ flex: 1, backgroundColor: colors.bg }} testID="home-screen">
       <Snow height={720} />
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 28 }]}>
-        <View style={styles.brandRow}>
-          <Text style={styles.brand}>Pinepost</Text>
-          <Pressable onPress={() => router.push("/settings")} hitSlop={12}>
-            <Text style={styles.settingsLink}>Settings</Text>
-          </Pressable>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{
+          paddingHorizontal: spacing.md,
+          paddingBottom: spacing.xxl,
+          gap: spacing.md,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: spacing.sm,
+          }}
+        >
+          <Text
+            style={{
+              color: colors.gold,
+              fontSize: 15,
+              fontWeight: "800",
+              letterSpacing: 2,
+              textTransform: "uppercase",
+            }}
+          >
+            Pinepost
+          </Text>
+          <Link href="/settings" asChild>
+            <Pressable hitSlop={12}>
+              <Text style={{ color: colors.creamMuted, fontSize: 14, fontWeight: "600" }}>Settings</Text>
+            </Pressable>
+          </Link>
         </View>
-        <Text style={styles.title}>{myTree.title}</Text>
-        <Text style={styles.meta}>
-          {myTree.ownerName} · {myTree.ornaments.length} ornament
-          {myTree.ornaments.length === 1 ? "" : "s"}
+
+        <Text
+          style={{
+            color: colors.cream,
+            fontSize: 32,
+            fontWeight: "800",
+            letterSpacing: -0.5,
+          }}
+        >
+          {tree.title}
+        </Text>
+        <Text style={{ color: colors.creamMuted, fontSize: 15, marginTop: -8 }}>
+          {tree.ownerName} · {tree.ornaments.length} ornament
+          {tree.ornaments.length === 1 ? "" : "s"}
         </Text>
 
-        <View style={styles.countdownWrap}>
-          <Countdown now={now} unlocked={unlocked} />
-        </View>
+        <Countdown now={now} unlocked={unlocked} />
 
         <TreeCanvas
-          tree={myTree}
+          tree={tree}
           width={treeWidth}
           height={treeWidth * 1.3}
           locked={!unlocked}
           onOrnamentPress={openOrnament}
         />
 
-        <View style={styles.actions}>
+        <View style={{ gap: spacing.sm, marginTop: spacing.sm }}>
           <Button label="Share invite" block onPress={shareTree} testID="share-invite" />
-          <Button
-            label="Decorate my tree"
-            variant="secondary"
-            block
-            onPress={() => router.push(`/decorate/${myTree.id}`)}
-          />
-          <View style={styles.row}>
-            <Button
-              label="Discover"
-              variant="ghost"
-              onPress={() => router.push("/discover")}
-              style={styles.half}
-            />
-            <Button
-              label="Join tree"
-              variant="ghost"
-              onPress={() => router.push("/join")}
-              style={styles.half}
-            />
+          <Link href={`/decorate/${tree.id}`} asChild>
+            <Button label="Decorate my tree" variant="secondary" block />
+          </Link>
+          <View style={{ flexDirection: "row", gap: spacing.sm }}>
+            <Link href="/discover" asChild>
+              <Button label="Discover" variant="ghost" style={{ flex: 1 }} />
+            </Link>
+            <Link href="/join" asChild>
+              <Button label="Join tree" variant="ghost" style={{ flex: 1 }} />
+            </Link>
           </View>
         </View>
 
-        <Link href="/discover" asChild>
-          <Pressable>
-            <Text style={styles.footerHint}>
-              Messages stay sealed until Christmas Day. Friends hang ornaments on your fir; you hang
-              some on theirs.
-            </Text>
-          </Pressable>
-        </Link>
+        <Text
+          style={{
+            color: colors.lock,
+            fontSize: 13,
+            lineHeight: 19,
+            textAlign: "center",
+            marginTop: spacing.sm,
+            paddingHorizontal: spacing.md,
+          }}
+        >
+          Messages stay sealed until Christmas Day. Friends hang ornaments on your fir; you hang some
+          on theirs.
+        </Text>
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
-  },
-  brandRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: spacing.sm,
-  },
-  brand: {
-    color: colors.gold,
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 2,
-    textTransform: "uppercase",
-  },
-  settingsLink: {
-    color: colors.creamMuted,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  title: {
-    color: colors.cream,
-    fontSize: 32,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-  },
-  meta: {
-    color: colors.creamMuted,
-    fontSize: 15,
-    marginTop: -8,
-  },
-  countdownWrap: {
-    marginTop: spacing.sm,
-  },
-  actions: {
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  row: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  half: {
-    flex: 1,
-  },
-  footerHint: {
-    color: colors.lock,
-    fontSize: 13,
-    lineHeight: 19,
-    textAlign: "center",
-    marginTop: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-});

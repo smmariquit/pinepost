@@ -1,21 +1,20 @@
+import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { Button, Chip, SectionLabel } from "../src/components/Button";
-import { TreeSwatch } from "../src/components/TreeCanvas";
-import { TOPPERS, TREE_COLORS } from "../src/catalog";
-import { createMyTree, useAppState } from "../src/store";
-import { colors, radii, spacing } from "../src/theme";
-import type { TopperId, TreeColorId } from "../src/types";
-import * as Haptics from "expo-haptics";
+import { Button, Chip, SectionLabel } from "@/components/Button";
+import { TreeSwatch } from "@/components/TreeCanvas";
+import { TOPPERS, TREE_COLORS } from "@/catalog";
+import { createMyTree, useAppState } from "@/store";
+import { colors, radii, spacing } from "@/theme";
+import type { TopperId, TreeColorId } from "@/types";
 
 export default function CreateScreen() {
   const state = useAppState();
@@ -26,7 +25,9 @@ export default function CreateScreen() {
 
   function submit() {
     if (!name.trim()) return;
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (process.env.EXPO_OS === "ios") {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
     createMyTree({
       ownerName: name,
       title: title || `${name.trim()}'s tree`,
@@ -39,9 +40,13 @@ export default function CreateScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.root}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={process.env.EXPO_OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.lede}>
           Grow a fir, share the invite, collect sealed notes until Christmas Day.
         </Text>
@@ -131,6 +136,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
+    borderCurve: "continuous",
     paddingHorizontal: 16,
     paddingVertical: 14,
     color: colors.cream,

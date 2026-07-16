@@ -3,7 +3,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,12 +11,12 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Button } from "../../src/components/Button";
-import { OrnamentPicker } from "../../src/components/OrnamentPicker";
-import { TreeCanvas } from "../../src/components/TreeCanvas";
-import { addOrnament, randomCanopyPoint, useAppState, useTree } from "../../src/store";
-import { colors, radii, spacing } from "../../src/theme";
-import type { OrnamentKind } from "../../src/types";
+import { Button } from "@/components/Button";
+import { OrnamentPicker } from "@/components/OrnamentPicker";
+import { TreeCanvas } from "@/components/TreeCanvas";
+import { addOrnament, randomCanopyPoint, useAppState, useTree } from "@/store";
+import { colors, radii, spacing } from "@/theme";
+import type { OrnamentKind } from "@/types";
 
 export default function DecorateScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -66,7 +65,9 @@ export default function DecorateScreen() {
 
   function submit() {
     if (!message.trim()) return;
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (process.env.EXPO_OS === "ios") {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
     addOrnament(tree!.id, {
       kind,
       fromName,
@@ -81,9 +82,13 @@ export default function DecorateScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.root}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={process.env.EXPO_OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.lede}>
           Hang something on {tree.ownerName}'s tree. The note stays sealed until Christmas.
         </Text>

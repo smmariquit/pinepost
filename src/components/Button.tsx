@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Pressable, StyleSheet, Text, View, type PressableProps } from "react-native";
 import { colors, radii, spacing } from "../theme";
 
@@ -16,10 +17,14 @@ const variantStyle: Record<Variant, { bg: string; fg: string; border?: string }>
   danger: { bg: colors.crimson, fg: colors.cream },
 };
 
-export function Button({ label, variant = "primary", block, disabled, style, ...rest }: Props) {
+export const Button = forwardRef<View, Props>(function Button(
+  { label, variant = "primary", block, disabled, style, ...rest },
+  ref,
+) {
   const v = variantStyle[variant];
   return (
     <Pressable
+      ref={ref}
       accessibilityRole="button"
       disabled={disabled}
       style={({ pressed }) => [
@@ -30,6 +35,7 @@ export function Button({ label, variant = "primary", block, disabled, style, ...
           borderColor: v.border ?? "transparent",
           borderWidth: v.border ? 1 : 0,
           opacity: disabled ? 0.45 : pressed ? 0.85 : 1,
+          borderCurve: "continuous",
         },
         style as object,
       ]}
@@ -38,7 +44,7 @@ export function Button({ label, variant = "primary", block, disabled, style, ...
       <Text style={[styles.label, { color: v.fg }]}>{label}</Text>
     </Pressable>
   );
-}
+});
 
 export function Chip({
   label,
@@ -54,10 +60,7 @@ export function Chip({
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.chip,
-        selected && styles.chipSelected,
-      ]}
+      style={[styles.chip, selected && styles.chipSelected, { borderCurve: "continuous" }]}
     >
       {emoji ? <Text style={styles.chipEmoji}>{emoji}</Text> : null}
       <Text style={[styles.chipLabel, selected && styles.chipLabelSelected]}>{label}</Text>

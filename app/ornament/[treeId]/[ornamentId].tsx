@@ -1,10 +1,10 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
-import { Button } from "../../../src/components/Button";
-import { ornamentByKind } from "../../../src/catalog";
-import { countdownParts, isUnlocked } from "../../../src/christmas";
-import { useAppState, useCountdownTick, useTree } from "../../../src/store";
-import { colors, radii, spacing } from "../../../src/theme";
+import { Button } from "@/components/Button";
+import { ornamentByKind } from "@/catalog";
+import { countdownParts, isUnlocked } from "@/christmas";
+import { useAppState, useCountdownTick, useTree } from "@/store";
+import { colors, radii, spacing } from "@/theme";
 
 export default function OrnamentScreen() {
   const { treeId, ornamentId } = useLocalSearchParams<{

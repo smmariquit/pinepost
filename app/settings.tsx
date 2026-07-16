@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import { Alert, StyleSheet, Switch, Text, View } from "react-native";
-import { Button } from "../src/components/Button";
-import { holidayYear, unlockDate } from "../src/christmas";
-import { resetAll, setDemoUnlock, useAppState } from "../src/store";
-import { colors, radii, spacing } from "../src/theme";
+import { Button } from "@/components/Button";
+import { holidayYear, unlockDate } from "@/christmas";
+import { resetAll, setDemoUnlock, useAppState } from "@/store";
+import { colors, radii, spacing } from "@/theme";
 
 export default function SettingsScreen() {
   const state = useAppState();

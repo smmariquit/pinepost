@@ -49,6 +49,10 @@ Join path accepted by the paste field: `pinepost://join/PINE1…`
 - react-native-svg tree
 - React Native Animated snowfall
 
+## Agent setup
+
+Official Expo Skills are required for Expo/EAS work. See [AGENTS.md](AGENTS.md) and [.cursor/skills/expo-stack/SKILL.md](.cursor/skills/expo-stack/SKILL.md).
+
 ## License
 
 MIT

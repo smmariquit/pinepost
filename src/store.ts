@@ -1,5 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import "expo-sqlite/localStorage/install";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { FEATURED_TREES } from "./seed";
 import type { AppState, Ornament, OrnamentKind, TopperId, Tree, TreeColorId } from "./types";
 
@@ -41,25 +41,28 @@ function emit() {
 
 function subscribe(cb: () => void) {
   store.listeners.add(cb);
-  return () => store.listeners.delete(cb);
+  return () => {
+    store.listeners.delete(cb);
+  };
 }
 
 function getVersion() {
   return store.version;
 }
 
-async function persist() {
-  const { demoUnlock: _, ...rest } = store.state;
-  // Keep demoUnlock in memory only? Actually persist it for QA convenience.
-  await AsyncStorage.setItem(KEY, JSON.stringify(store.state));
+function persist() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(store.state));
+  } catch {
+    // quota / private mode — keep in-memory
+  }
 }
 
 export async function loadStore(): Promise<void> {
   try {
-    const raw = await AsyncStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as AppState;
-      // Re-merge featured trees so discover stays fresh if we update seeds
       const trees = { ...parsed.trees };
       for (const t of FEATURED_TREES) {
         if (!trees[t.id] || trees[t.id].featured) trees[t.id] = t;
@@ -81,7 +84,7 @@ export async function loadStore(): Promise<void> {
 function setState(next: AppState) {
   store.state = next;
   emit();
-  void persist();
+  persist();
 }
 
 export function useAppReady(): boolean {
@@ -185,7 +188,6 @@ export function addOrnament(
 }
 
 export function randomCanopyPoint(existing: Ornament[]): { x: number; y: number } {
-  // Avoid overlapping previous ornaments too hard
   for (let attempt = 0; attempt < 24; attempt++) {
     const y = 0.16 + Math.random() * 0.68;
     const spread = 0.16 + y * 0.58;
@@ -222,9 +224,4 @@ export function useRankedTrees(): Tree[] {
 
 export function resetAll() {
   setState(emptyState());
-}
-
-/** Hook helpers for screens that need stable callbacks */
-export function useStoreActions() {
-  return useCallback(() => store.state, []);
 }

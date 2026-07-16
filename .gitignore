@@ -40,6 +40,5 @@ yarn-error.*
 /ios
 /android
 
-# local agent
+# local agent (keep committed Cursor skills/rules)
 .claude/
-.cursor/

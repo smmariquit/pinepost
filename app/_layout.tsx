@@ -1,9 +1,11 @@
+import "react-native-gesture-handler";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { loadStore, useAppReady } from "../src/store";
-import { colors } from "../src/theme";
+import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { loadStore, useAppReady } from "@/store";
+import { colors } from "@/theme";
 
 export default function RootLayout() {
   const ready = useAppReady();
@@ -14,7 +16,7 @@ export default function RootLayout() {
 
   if (!ready) {
     return (
-      <View style={styles.boot}>
+      <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: "center", justifyContent: "center" }}>
         <ActivityIndicator color={colors.gold} size="large" />
         <StatusBar style="light" />
       </View>
@@ -22,7 +24,7 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={styles.root}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style="light" />
       <Stack
         screenOptions={{
@@ -34,7 +36,7 @@ export default function RootLayout() {
           animation: "fade_from_bottom",
         }}
       >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ title: "Pinepost", headerShown: false }} />
         <Stack.Screen name="create" options={{ title: "Grow your tree" }} />
         <Stack.Screen name="tree/[id]" options={{ title: "Tree" }} />
         <Stack.Screen name="decorate/[id]" options={{ title: "Hang an ornament" }} />
@@ -43,16 +45,6 @@ export default function RootLayout() {
         <Stack.Screen name="join" options={{ title: "Join a tree" }} />
         <Stack.Screen name="settings" options={{ title: "Settings" }} />
       </Stack>
-    </View>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
-  boot: {
-    flex: 1,
-    backgroundColor: colors.bg,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
